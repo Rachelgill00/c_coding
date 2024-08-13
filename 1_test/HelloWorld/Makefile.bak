@@ -1,0 +1,10 @@
+CC=gcc
+CFLAGS=-Wall
+
+all: helloworld
+
+helloworld: helloworld.c
+    $(CC) $(CFLAGS) -o helloworld helloworld.c
+
+clean:
+    rm -f helloworld
