@@ -19,7 +19,11 @@ int readInput(int *buffer){
         i++;
     }
 
-	 fclose(fd);  
+    if (i > INPUT_MAX){
+        printf("Error: Invalid input data in "INPUT_FILE_NAME".\n");
+    }
+        
+	fclose(fd);  
 
     return i;
 }
