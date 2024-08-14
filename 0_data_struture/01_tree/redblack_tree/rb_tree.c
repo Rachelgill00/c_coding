@@ -76,6 +76,21 @@ void rbtree_right_rotate(RBTree *T, RBNode *y){
 	y -> parent = x;
 }
 
+void rebtree_insert_fixup(RBTree *T, RBNode *node){
+    RBNode *parent = node -> parent;
+    RBNode *grand_parent = parent -> parent;
+    RBNode *uncle;
+    int is_left = (node == parent->left);
+    int is_parent_is_left;
+
+    if(node = T -> root){
+        node -> color = BLACK;
+        return;
+    }
+
+    return;
+}
+
 void rbtree_insert(RBTree *T, int key){
     // Init the new node.
     RBNode *newnode = (RBNode *)calloc(1, sizeof(RBNode));
@@ -102,11 +117,15 @@ void rbtree_insert(RBTree *T, int key){
     }
 
     newnode -> parent = current;
+
+    //if root is nill
+    if(current = T -> nil){
+        T -> root = newnode;
+    }
+
+    rebtree_insert_fixup(T, newnode);
 }
 
-void rebtree_insert_fixup(RBTree *T, RBNode *z){
-    
-}
 
 /*
 void rbtree_node *rbtree_delete(RBTree *T, RBNode *z){
@@ -178,7 +197,7 @@ int main(){
     //Init a Red Black Tree
     RBTree *T = new_rbtree();    //Insert the nodes to the Red Black Tree
 
-
+    //free
     return 0;
 }
 
