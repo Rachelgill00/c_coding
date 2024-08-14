@@ -20,6 +20,20 @@ typedef struct rbtree{
     RBNode *nil; 
 }RBTree;
 
+// Init a Red Black Tree.
+RBTree *new_rbtree(void){
+    RBTree *T = (RBTree *)malloc(sizeof(RBTree));
+    if(T == NULL){
+        printf("malloc failed!\n");
+        exit(-1);
+    }
+    RBNode *nil = (RBNode *)malloc(sizeof(RBNode));
+    nil -> color = BLACK;
+    T -> nil = T -> root = nil;
+    
+    return T;
+}
+
 void rbtree_left_rotate(RBTree *T, RBNode *x){
     RBNode *y = x -> right;
 
@@ -62,15 +76,32 @@ void rbtree_right_rotate(RBTree *T, RBNode *y){
 	y -> parent = x;
 }
 
-void rbtree_insert(RBTree *T, RBNode *z){
-    RBNode *y = T -> nil;
+void rbtree_insert(RBTree *T, int key){
+    // Init the new node.
+    RBNode *newnode = (RBNode *)calloc(1, sizeof(RBNode));
+    newnode -> key = key;
+    newnode -> color = RED;
+    newnode -> left = newnode -> right = T -> nil;
 
-    z -> parent = y;
-
-    if( y == T -> nil){
-        T -> root = z;
+    //The possition of the newnode for insertion
+    RBNode *current = T -> root;
+    while (current != T -> nil){
+        if(key < current -> key){
+            if(current -> left = T -> nil){
+                current -> left = newnode;
+                break;
+            }
+            current = current -> left;
+        }else{
+            if(current -> right = T ->nil){
+                current -> right = newnode;
+                break;
+            }
+            current = current -> right;
+        }
     }
-    
+
+    newnode -> parent = current;
 }
 
 void rebtree_insert_fixup(RBTree *T, RBNode *z){
@@ -91,9 +122,6 @@ void rbtree_delete_fixup(RBTree *T, RBNode *z){
 //void rbtree_node *rbtree_search
 
 //void rbtree_traversal
-
-
-
 void rbtree_traversal(){
 
 }
@@ -130,14 +158,9 @@ void printFile(int inputTotal, int inputData[]){
     }
 }
 
-// Node Insertion
-RBNode nodeInsertion(RBNode *rb_node){
-
-}
 
 // Node Deletion
 
-// Creation
 
 
 
@@ -152,17 +175,8 @@ int main(){
     printFile(inputTotal, inputData);
     printf("\n");
 
-    //Init a Rad Black Tree
-    RBTree *T = (RBTree *)malloc(sizeof(RBTree));
-    if(T == NULL){
-        printf("malloc failed!\n");
-        return -1;
-    }
-    T -> nil = (RBNode *)malloc(sizeof(RBNode));
-    T -> nil -> color = BLACK;
-    T -> root = T -> nil;
-
-    //Insert the nodes to the Red Black Tree
+    //Init a Red Black Tree
+    RBTree *T = new_rbtree();    //Insert the nodes to the Red Black Tree
 
 
     return 0;
