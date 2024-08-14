@@ -10,6 +10,9 @@ typedef struct btnode{
     struct btnode *lChild, *rChild;
 }BTNode, *BTree;
 
+
+
+
 //Read input data from a file and write the data into buffer
 int readInput(int *buffer){
     FILE* fd;
