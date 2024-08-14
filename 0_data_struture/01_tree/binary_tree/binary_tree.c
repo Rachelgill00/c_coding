@@ -10,7 +10,12 @@ typedef struct btnode{
     struct btnode *lChild, *rChild;
 }BTNode, *BTree;
 
-
+void PreOrder(BiTree T){
+    if(T != NULL){
+        visit(T);
+        PreOrder(T)
+    }
+}
 
 
 //Read input data from a file and write the data into buffer

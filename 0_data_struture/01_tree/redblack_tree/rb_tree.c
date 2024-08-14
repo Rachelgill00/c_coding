@@ -163,10 +163,7 @@ int main(){
     T -> root = T -> nil;
 
     //Insert the nodes to the Red Black Tree
-    
 
-
-    
 
     return 0;
 }
