@@ -60,7 +60,22 @@ void traverse_and_delete_node(RBTree *T, RBNode *node){
     free(T);
  }
 
-
+/*
+    Fixup case:
+    1. When Uncle Node's color is Black
+        1)LL or RR
+            a. Rotation
+            b. Change the color of the parent node and uncle node 
+        2)LR or RL
+            a. 2*Rotation
+            b. Change the color of new node and child node
+                (Child node is the node that afer rotating)
+    2.  When Uncle Node's color is Red
+        a. Change the color of the parent node and uncle node to BLACK
+        b. Change the color of the grandparent node to RED
+        c. Set the grandparent node to 'newnode', 
+           and call the fixup function recursivelu 
+*/
 
 void rebtree_insert_fixup(RBTree *T, RBNode *node){
     // Init some pointers.
@@ -169,7 +184,7 @@ void rbtree_delete_fixup(RBTree *T, RBNode *z){
 
 //void rbtree_traversal
 void rbtree_inoder_traversal(){
-
+    if 
 }
 
 //Read input data from a file and write the data into buffer
