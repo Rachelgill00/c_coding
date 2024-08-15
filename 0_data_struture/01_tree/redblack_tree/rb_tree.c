@@ -20,6 +20,39 @@ typedef struct rbtree{
     RBNode *nil; 
 }RBTree;
 
+// Print the Red Black Tree.
+void printTree(RBTree *T, RBNode *node, int type, int level){
+
+    int i;
+
+    if(node == T -> nil){
+        return;
+    }
+
+    printTree(T, node -> right, 2, level + 1);
+
+    switch(type){
+        case 0:
+            printf("%3d (%s)\n", node->key, (node->color == RED) ? "R" : "B");
+            break;
+        case 1:
+            for(i = 0; i < level; i++){
+                printf("\t");
+            }
+            printf("\\ %3d (%s)\n", node->key, (node->color == RED) ? "R" : "B");
+            break;
+        case 2: 
+            for(i = 0; i < level; i++){
+                printf("\t");
+            }
+            printf("/ %3d (%s)\n", node->key, (node->color == RED) ? "R" : "B");
+            break;
+            
+    }
+
+    printTree(T, node -> left, 1, level + 1);
+}
+
 // Init a Red Black Tree.
 RBTree *new_rbtree(void){
     // New a RBTree 
@@ -60,86 +93,12 @@ void traverse_and_delete_node(RBTree *T, RBNode *node){
     free(T);
  }
 
-/*
-    Fixup case:
-    1. When Uncle Node's color is Black
-        1)LL or RR
-            a. Rotation
-            b. Change the color of the parent node and uncle node 
-        2)LR or RL
-            a. 2*Rotation
-            b. Change the color of new node and child node
-                (Child node is the node that afer rotating)
-    2.  When Uncle Node's color is Red
-        a. Change the color of the parent node and uncle node to BLACK
-        b. Change the color of the grandparent node to RED
-        c. Set the grandparent node to 'newnode', 
-           and call the fixup function recursivelu 
-*/
-
-void rebtree_insert_fixup(RBTree *T, RBNode *node){
-    // Init some pointers.
-    RBNode *parent = node -> parent;
-    RBNode *grand_parent = parent -> parent;
-    RBNode *uncle;
-    // Define some variable to measure something.
-    int is_left = (node == parent->left);
-    int is_parent_is_left;
-
-    //If the newnode is the root, it's color must be Black.
-    if(node = T -> root){
-        node -> color = BLACK;
-        return;
-    }
-    
-
-
-    return;
-}
-
-void rbtree_insert(RBTree *T, int key){
-    // Init the new node.
-    RBNode *newnode = (RBNode *)calloc(1, sizeof(RBNode));
-    newnode -> key = key;
-    newnode -> color = RED;
-    newnode -> left = newnode -> right = T -> nil;
-
-    //The possition of the newnode for insertion
-    RBNode *current = T -> root;
-    // If the newnode is not the root: 
-    while (current != T -> nil){
-        if(key < current -> key){
-            if(current -> left = T -> nil){
-                current -> left = newnode;
-                break;
-            }
-            current = current -> left;
-        }else{
-            if(current -> right = T ->nil){
-                current -> right = newnode;
-                break;
-            }
-            current = current -> right;
-        }
-    }
-
-    newnode -> parent = current;
-
-    // If the newnode is the root:
-    if(current = T -> nil){
-        T -> root = newnode;
-    }
-
-    // It needs to go to fixup after inserting.
-    rebtree_insert_fixup(T, newnode);
-}
-
-void rbtree_left_rotate(RBTree *T, RBNode *x){
+ void rbtree_left_rotate(RBTree *T, RBNode *x){
     RBNode *y = x -> right;
-
     x -> right = y -> left;
+
     if(y -> left != T -> nil){
-        y -> left = x;
+        y -> left -> parent = x;
     }
 
     y -> parent = x -> parent;
@@ -153,18 +112,30 @@ void rbtree_left_rotate(RBTree *T, RBNode *x){
 
     y -> left = x;
     x -> parent = y;
+
+    return;
 }
 
 void rbtree_right_rotate(RBTree *T, RBNode *y){
-    RBNode *x = y-> right;
-
+    RBNode *x = y-> left;
     y -> left = x -> right;
+
+    printf("y = %d\n", y -> key);
+    printf("x = %d\n", x -> key);
+    printf("y - parent = %d\n", y -> parent -> key);
     
     if(x -> right != T -> nil){
-        x -> right = y;
+        x -> right -> parent = y;
+    }
+    
+    x -> parent = y -> parent;
+    
+    if((y -> key) != 20){
+        printf("y-parent-right: %d\n", y -> parent -> right -> key);
+        printf("y-parent-left: %d\n", y -> parent -> left -> key);
     }
 
-    if(y -> parent != T -> nil){
+    if(y -> parent == T -> nil){
         T -> root = x;
     }else if(y == y -> parent -> left){
         y -> parent -> left = x;
@@ -174,17 +145,158 @@ void rbtree_right_rotate(RBTree *T, RBNode *y){
 
     x -> right = y;
 	y -> parent = x;
+
+    return;
+}
+
+/*
+    Fixup case:
+    1. When Uncle Node's color is 'Black'
+        1)LL or RR
+            a. Rotation
+            b. Change the color of the parent node and uncle node 
+        2)LR or RL
+            a. 2*Rotation
+            b. Change the color of new node and child node
+                (Child node is the node that afer rotating)
+    2.  When Uncle Node's color is 'Red'
+        a. Change the color of the 'parent node' and 'uncle node' to BLACK
+        b. Change the color of the grandparent node to RED
+        c. Set the grandparent node to 'newnode', 
+           and maybe need to call the fixup function recursively
+*/
+void exchange_color(RBNode *left, RBNode *right){
+        int temp = left -> color;
+        left -> color = right -> color;
+        right -> color = (temp == BLACK) ? BLACK : RED ;
+}
+
+void rebtree_insert_fixup(RBTree *T, RBNode *node){
+    // Init some pointers.
+    RBNode *parent = node -> parent;
+    RBNode *grand_parent = parent -> parent;
+    if ((node != T -> root) &&(node != T -> root -> left) && (node != T -> root -> right)){
+        printf("node:%d\n", node -> key);
+        printf("parent:%d\n", parent -> key);
+        printf("grandparent:%d\n", grand_parent -> key);
+        printf("grandparent -> parent :%d\n", grand_parent -> parent -> key);
+    }
+    
+    RBNode *uncle;
+
+    //If the newnode is the root, it's color must be Black.
+    if(node == T -> root){
+        node -> color = BLACK;
+        return;
+    }
+    if(parent -> color == BLACK){
+        return;
+    }
+
+    // Measure the color of the uncle node
+    if(grand_parent -> left == parent){
+        uncle = grand_parent -> right;
+    }else{
+        uncle = grand_parent -> left;
+    }
+    
+    if(uncle -> color == BLACK){
+        // When uncle node is Black
+        if((parent -> left == node) && ((grand_parent -> left) == parent)){
+            //LL
+            printf("LL!\n");
+            // Print the Red Black Tree
+            printf("Red Black Tree:\n");
+            printTree(T, T -> root, 0, 0);
+
+            rbtree_right_rotate(T, grand_parent);
+
+            // Print the Red Black Tree
+            printf("Red Black Tree:\n");
+            printTree(T, T -> root, 0, 0);
+
+            exchange_color(parent, parent -> right);
+
+            return;
+        }else if((parent -> right == node) && ((grand_parent -> right) == parent)){
+            //RR
+            printf("RR!\n");
+            rbtree_left_rotate(T, grand_parent);
+            
+            exchange_color(parent, parent -> left);
+
+            return;
+        }else if((parent -> left = node) &&((grand_parent -> right) = parent)){
+            //LR
+            rbtree_left_rotate(T, grand_parent);
+            rbtree_right_rotate(T, grand_parent);
+            exchange_color(node, node -> right);
+
+            return; 
+        }else if((parent -> left = node) &&((grand_parent -> right) = parent)){
+            //RL
+            rbtree_right_rotate(T, grand_parent);
+            rbtree_left_rotate(T, grand_parent);
+            exchange_color(node, node -> left);
+
+            return;
+        }
+    }else{
+        //When uncle node is Red
+        parent -> color = uncle -> color = BLACK;
+        grand_parent -> color = RED;
+        rebtree_insert_fixup(T, grand_parent);
+    }
+
+    
+    return;
+}
+
+void rbtree_insert(RBTree *T, int key){
+    // Init the new node.
+    RBNode *newnode = (RBNode *)calloc(1, sizeof(RBNode));
+    newnode -> key = key;
+    newnode -> color = RED;
+    newnode -> left = newnode -> right = T -> nil;
+
+    //The possition of the newnode for insertion
+    RBNode *current = T -> root;
+
+    // If the newnode is not the root: 
+    while (current != T -> nil){
+        if(key < (current -> key)){
+            if(current -> left == T -> nil){
+                current -> left = newnode;
+
+                break;
+            }
+            current = current -> left;
+
+        }else{
+            if(current -> right == T ->nil){
+                current -> right = newnode;
+                
+                break;
+            }
+            current = current -> right;
+
+        }
+    }
+
+    newnode -> parent = current;
+    printf("newnode -> parent:%d\n", newnode -> parent -> key);
+
+    // If the newnode is the root:
+    if(current == T -> nil){
+        T -> root = newnode;
+    }
+
+    // It needs to go to fixup after inserting.
+    rebtree_insert_fixup(T, newnode);
 }
 
 void rbtree_delete_fixup(RBTree *T, RBNode *z){
 
-}
-
-//void rbtree_node *rbtree_search
-
-//void rbtree_traversal
-void rbtree_inoder_traversal(){
-    if 
 }
 
 //Read input data from a file and write the data into buffer
@@ -222,8 +334,6 @@ void printFile(int inputTotal, int inputData[]){
 
 // Node Deletion
 
-
-
 int main(){
     int inputTotal;                         // Number of tree size
     int inputData[MAX_TREE_SIZE];           // Trees' value
@@ -238,10 +348,18 @@ int main(){
     //Init a Red Black Tree
     RBTree *T = new_rbtree();    //Insert the nodes to the Red Black Tree
 
-    //The pointer for Searching
+    for(int i =0; i< inputTotal; i++){
+        printf("-----------------------------node:%d\n", inputData[i]);
+        rbtree_insert(T, inputData[i]);
+        if(inputData[i] == 2){
+            // Print the Red Black Tree
+            printf("Red Black Tree:\n");
+            printTree(T, T -> root, 0, 0);
+        }
+    }
+    // Free the Red Black Tree
+    delete_rbtree(T);
 
-
-    //free
     return 0;
 }
 
