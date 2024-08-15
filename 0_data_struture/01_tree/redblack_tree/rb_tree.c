@@ -22,16 +22,101 @@ typedef struct rbtree{
 
 // Init a Red Black Tree.
 RBTree *new_rbtree(void){
+    // New a RBTree 
     RBTree *T = (RBTree *)malloc(sizeof(RBTree));
     if(T == NULL){
         printf("malloc failed!\n");
         exit(-1);
     }
+
+    // New a  nil(Node)
     RBNode *nil = (RBNode *)malloc(sizeof(RBNode));
     nil -> color = BLACK;
     T -> nil = T -> root = nil;
     
     return T;
+}
+
+void traverse_and_delete_node(RBTree *T, RBNode *node){
+    if(node -> left != T -> nil){
+        traverse_and_delete_node(T, node);
+    }
+    if(node -> right != T -> nil){
+        traverse_and_delete_node(T, node);
+    }
+
+    free(node);
+}
+
+// Remember to free it aftering you have malloced something
+ void delete_rbtree(RBTree *T){
+    RBNode *node = T -> root;
+    if (node != T -> nil){
+        traverse_and_delete_node(T, node);
+    }
+
+    // Free the struct momory of nil(TBNode) and rbtree(RBTree)
+    free(T -> nil);
+    free(T);
+ }
+
+
+
+void rebtree_insert_fixup(RBTree *T, RBNode *node){
+    // Init some pointers.
+    RBNode *parent = node -> parent;
+    RBNode *grand_parent = parent -> parent;
+    RBNode *uncle;
+    // Define some variable to measure something.
+    int is_left = (node == parent->left);
+    int is_parent_is_left;
+
+    //If the newnode is the root, it's color must be Black.
+    if(node = T -> root){
+        node -> color = BLACK;
+        return;
+    }
+    
+
+
+    return;
+}
+
+void rbtree_insert(RBTree *T, int key){
+    // Init the new node.
+    RBNode *newnode = (RBNode *)calloc(1, sizeof(RBNode));
+    newnode -> key = key;
+    newnode -> color = RED;
+    newnode -> left = newnode -> right = T -> nil;
+
+    //The possition of the newnode for insertion
+    RBNode *current = T -> root;
+    // If the newnode is not the root: 
+    while (current != T -> nil){
+        if(key < current -> key){
+            if(current -> left = T -> nil){
+                current -> left = newnode;
+                break;
+            }
+            current = current -> left;
+        }else{
+            if(current -> right = T ->nil){
+                current -> right = newnode;
+                break;
+            }
+            current = current -> right;
+        }
+    }
+
+    newnode -> parent = current;
+
+    // If the newnode is the root:
+    if(current = T -> nil){
+        T -> root = newnode;
+    }
+
+    // It needs to go to fixup after inserting.
+    rebtree_insert_fixup(T, newnode);
 }
 
 void rbtree_left_rotate(RBTree *T, RBNode *x){
@@ -76,64 +161,6 @@ void rbtree_right_rotate(RBTree *T, RBNode *y){
 	y -> parent = x;
 }
 
-void rebtree_insert_fixup(RBTree *T, RBNode *node){
-    RBNode *parent = node -> parent;
-    RBNode *grand_parent = parent -> parent;
-    RBNode *uncle;
-    int is_left = (node == parent->left);
-    int is_parent_is_left;
-
-    if(node = T -> root){
-        node -> color = BLACK;
-        return;
-    }
-
-    return;
-}
-
-void rbtree_insert(RBTree *T, int key){
-    // Init the new node.
-    RBNode *newnode = (RBNode *)calloc(1, sizeof(RBNode));
-    newnode -> key = key;
-    newnode -> color = RED;
-    newnode -> left = newnode -> right = T -> nil;
-
-    //The possition of the newnode for insertion
-    RBNode *current = T -> root;
-    while (current != T -> nil){
-        if(key < current -> key){
-            if(current -> left = T -> nil){
-                current -> left = newnode;
-                break;
-            }
-            current = current -> left;
-        }else{
-            if(current -> right = T ->nil){
-                current -> right = newnode;
-                break;
-            }
-            current = current -> right;
-        }
-    }
-
-    newnode -> parent = current;
-
-    //if root is nill
-    if(current = T -> nil){
-        T -> root = newnode;
-    }
-
-    rebtree_insert_fixup(T, newnode);
-}
-
-
-/*
-void rbtree_node *rbtree_delete(RBTree *T, RBNode *z){
-
-}
-
-*/
-
 void rbtree_delete_fixup(RBTree *T, RBNode *z){
 
 }
@@ -141,7 +168,7 @@ void rbtree_delete_fixup(RBTree *T, RBNode *z){
 //void rbtree_node *rbtree_search
 
 //void rbtree_traversal
-void rbtree_traversal(){
+void rbtree_inoder_traversal(){
 
 }
 
@@ -182,7 +209,6 @@ void printFile(int inputTotal, int inputData[]){
 
 
 
-
 int main(){
     int inputTotal;                         // Number of tree size
     int inputData[MAX_TREE_SIZE];           // Trees' value
@@ -196,6 +222,9 @@ int main(){
 
     //Init a Red Black Tree
     RBTree *T = new_rbtree();    //Insert the nodes to the Red Black Tree
+
+    //The pointer for Searching
+
 
     //free
     return 0;
