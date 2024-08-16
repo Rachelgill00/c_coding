@@ -94,26 +94,6 @@ void traverse_and_delete_node(RBTree *T, RBNode *node){
  }
 
  void rbtree_left_rotate(RBTree *T, RBNode *node){
-    /*
-    RBNode *y = x -> right;
-    x -> right = y -> left;
-
-    if(y -> left != T -> nil){
-        y -> left -> parent = x;
-    }
-
-    y -> parent = x -> parent;
-    if(x -> parent == T -> nil){
-        T -> root = y;
-    }else if(x == x -> parent -> left){
-        x -> parent -> left = y;
-    }else{
-        x -> parent -> right = y;
-    }
-
-    y -> left = x;
-    x -> parent = y;
-    */
     RBNode *parent = node -> parent;
     RBNode * grand_parent = parent -> parent;
     RBNode * node_left = node -> left;
@@ -139,36 +119,6 @@ void traverse_and_delete_node(RBTree *T, RBNode *node){
 }
 
 void rbtree_right_rotate(RBTree *T, RBNode *node){
-    /*
-    RBNode *x = y-> left;
-    y -> left = x -> right;
-
-    printf("y = %d\n", y -> key);
-    printf("x = %d\n", x -> key);
-    printf("y - parent = %d\n", y -> parent -> key);
-    
-    if(x -> right != T -> nil){
-        x -> right -> parent = y;
-    }
-    
-    x -> parent = y -> parent;
-    
-    if((y -> key) != 20){
-        printf("y-parent-right: %d\n", y -> parent -> right -> key);
-        printf("y-parent-left: %d\n", y -> parent -> left -> key);
-    }
-
-    if(y -> parent == T -> nil){
-        T -> root = x;
-    }else if(y == y -> parent -> left){
-        y -> parent -> left = x;
-    }else{
-        y -> parent -> right = x;
-    }
-
-    x -> right = y;
-	y -> parent = x;
-    */
     RBNode *parent = node -> parent;
     RBNode *grand_parent = parent -> parent;
     RBNode *node_right = node -> right;
@@ -398,7 +348,7 @@ int main(){
         printTree(T, T -> root, 0, 0);
         
     }
-    
+
     // Free the Red Black Tree
     delete_rbtree(T);
 
