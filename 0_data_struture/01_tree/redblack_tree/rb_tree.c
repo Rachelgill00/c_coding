@@ -93,7 +93,8 @@ void traverse_and_delete_node(RBTree *T, RBNode *node){
     free(T);
  }
 
- void rbtree_left_rotate(RBTree *T, RBNode *x){
+ void rbtree_left_rotate(RBTree *T, RBNode *node){
+    /*
     RBNode *y = x -> right;
     x -> right = y -> left;
 
@@ -112,11 +113,33 @@ void traverse_and_delete_node(RBTree *T, RBNode *node){
 
     y -> left = x;
     x -> parent = y;
+    */
+    RBNode *parent = node -> parent;
+    RBNode * grand_parent = parent -> parent;
+    RBNode * node_left = node -> left;
 
+    if (parent == T -> root){
+        T -> root = node;
+    }else{
+        if(grand_parent -> left == parent){
+            grand_parent -> left = node;
+        }else{
+            grand_parent -> right = node;
+        }
+    }
+    node -> parent = grand_parent;
+
+    parent -> parent = node;
+    node -> left = parent;
+
+    parent -> right = node_left;
+    node_left -> parent = parent;
+    
     return;
 }
 
-void rbtree_right_rotate(RBTree *T, RBNode *y){
+void rbtree_right_rotate(RBTree *T, RBNode *node){
+    /*
     RBNode *x = y-> left;
     y -> left = x -> right;
 
@@ -145,7 +168,27 @@ void rbtree_right_rotate(RBTree *T, RBNode *y){
 
     x -> right = y;
 	y -> parent = x;
+    */
+    RBNode *parent = node -> parent;
+    RBNode *grand_parent = parent -> parent;
+    RBNode *node_right = node -> right;
 
+    if(parent == T -> root){
+        T -> root = node;
+    }else{
+        if(grand_parent -> left == parent){
+            grand_parent -> left = node;
+        }else{
+            grand_parent -> right = node;
+        }
+    }
+    node -> parent = grand_parent;
+    parent -> parent = node;
+    node -> right = parent;
+
+    node_right -> parent = parent;
+    parent -> left = node_right;
+    
     return;
 }
 
@@ -205,39 +248,37 @@ void rebtree_insert_fixup(RBTree *T, RBNode *node){
         if((parent -> left == node) && ((grand_parent -> left) == parent)){
             //LL
             printf("LL!\n");
-            // Print the Red Black Tree
-            printf("Red Black Tree:\n");
-            printTree(T, T -> root, 0, 0);
 
-            rbtree_right_rotate(T, grand_parent);
-
-            // Print the Red Black Tree
-            printf("Red Black Tree:\n");
-            printTree(T, T -> root, 0, 0);
+            rbtree_right_rotate(T, parent);
 
             exchange_color(parent, parent -> right);
 
             return;
+
         }else if((parent -> right == node) && ((grand_parent -> right) == parent)){
             //RR
             printf("RR!\n");
-            rbtree_left_rotate(T, grand_parent);
             
+
+            rbtree_left_rotate(T, parent);
+
             exchange_color(parent, parent -> left);
 
             return;
-        }else if((parent -> left = node) &&((grand_parent -> right) = parent)){
+
+        }else if((parent -> right == node) &&((grand_parent -> left) == parent)){
             //LR
-            rbtree_left_rotate(T, grand_parent);
-            rbtree_right_rotate(T, grand_parent);
-            exchange_color(node, node -> right);
+            rbtree_left_rotate(T, node);
+            rbtree_right_rotate(T, node);
+            exchange_color(node, grand_parent);
 
             return; 
-        }else if((parent -> left = node) &&((grand_parent -> right) = parent)){
+
+        }else if((parent -> left == node) &&((grand_parent -> right) == parent)){
             //RL
-            rbtree_right_rotate(T, grand_parent);
-            rbtree_left_rotate(T, grand_parent);
-            exchange_color(node, node -> left);
+            rbtree_right_rotate(T, node);
+            rbtree_left_rotate(T, node);
+            exchange_color(node, grand_parent);
 
             return;
         }
@@ -259,7 +300,7 @@ void rbtree_insert(RBTree *T, int key){
     newnode -> color = RED;
     newnode -> left = newnode -> right = T -> nil;
 
-    //The possition of the newnode for insertion
+    //
     RBNode *current = T -> root;
 
     // If the newnode is not the root: 
@@ -351,12 +392,13 @@ int main(){
     for(int i =0; i< inputTotal; i++){
         printf("-----------------------------node:%d\n", inputData[i]);
         rbtree_insert(T, inputData[i]);
-        if(inputData[i] == 2){
-            // Print the Red Black Tree
-            printf("Red Black Tree:\n");
-            printTree(T, T -> root, 0, 0);
-        }
+    
+        // Print the Red Black Tree
+        printf("Red Black Tree:\n");
+        printTree(T, T -> root, 0, 0);
+        
     }
+    
     // Free the Red Black Tree
     delete_rbtree(T);
 
