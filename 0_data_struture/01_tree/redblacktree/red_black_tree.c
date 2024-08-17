@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #define MAX_TREE_SIZE 100                   // Maximum number of elements
-#define INPUT_FILE_NAME "input.txt"         // Input file containing input data to sort (+ the number of elements)
+#define INPUT_FILE_NAME "input2.txt"         // Input file containing input data to sort (+ the number of elements)
 
 #define BLACK 1
 #define RED 2
@@ -19,6 +19,19 @@ typedef struct rbtree{
     RBNode *root;
     RBNode *nil; 
 }RBTree;
+
+int readInput(int *buffer);
+void printFile(int inputTotal, int inputData[]);
+RBTree *new_rbtree(void);
+void delete_rbtree(RBTree *T);
+void traverse_and_delete_node(RBTree *T, RBNode *node);
+void rbtree_insert(RBTree *T, int key);
+void rebtree_insert_fixup(RBTree *T, RBNode *node);
+void rbtree_left_rotate(RBTree *T, RBNode *node);
+void rbtree_right_rotate(RBTree *T, RBNode *node);
+void exchange_color(RBNode *left, RBNode *right);
+RBNode *rbnode_find(RBTree *T, int key0);
+void printTree(RBTree *T, RBNode *node, int type, int level);
 
 // Print the Red Black Tree.
 void printTree(RBTree *T, RBNode *node, int type, int level){
@@ -286,6 +299,23 @@ void rbtree_insert(RBTree *T, int key){
     rebtree_insert_fixup(T, newnode);
 }
 
+RBNode *rbnode_find(RBTree *T, int key){
+    RBNode *current = T -> root;
+    while(current != T ->nil){
+        if(key == current -> key){
+            printf("Node %d is found!\n", key);
+
+            return current;
+        }else{
+            current = (key < current -> key) ? current -> left : current -> right;
+        }
+    }
+
+    return NULL;
+}
+
+
+
 void rbtree_delete_fixup(RBTree *T, RBNode *z){
 
 }
@@ -346,7 +376,6 @@ int main(){
         // Print the Red Black Tree
         printf("Red Black Tree:\n");
         printTree(T, T -> root, 0, 0);
-        
     }
 
     // Free the Red Black Tree

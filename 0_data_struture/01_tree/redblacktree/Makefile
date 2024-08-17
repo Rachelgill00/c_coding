@@ -1,11 +1,11 @@
 CC = gcc
-OBJS = rb_tree.o
+OBJS = red_black_tree.o
 
 executable: $(OBJS)
 	$(CC) -o executable $(OBJS)
 
-rb_tree.o: rb_tree.c
-	$(CC) -c -g rb_tree.c
+red_black_tree.o: red_black_tree.c
+	$(CC) -c -g red_black_tree.c
 
 clean:
 	rm -f *.o
