@@ -30,7 +30,8 @@ void rebtree_insert_fixup(RBTree *T, RBNode *node);
 void rbtree_left_rotate(RBTree *T, RBNode *node);
 void rbtree_right_rotate(RBTree *T, RBNode *node);
 void exchange_color(RBNode *left, RBNode *right);
-//void rbnode_find(RBTree *T, int key, int *result);
+RBNode * rbnode_find(RBTree *T, int key);
+void rbtree_erase(RBTree *T, int key);
 void printTree(RBTree *T, RBNode *node, int type, int level);
 
 // Print the Red Black Tree.
@@ -314,10 +315,11 @@ RBNode * rbnode_find(RBTree *T, int key){
             printf("Visiting Node %d\n", current->key);
         }
     }
-    printf("Can not fine the node[%d]!", key);
+    printf("Can not fine the node[%d]!\n", key);
 
     return NULL;
 }
+
 
 /*
 Erase Case:
@@ -352,13 +354,15 @@ Erase Case:
 		
 */
 
-void rbtree_check(RBTree *T, int key){
-    RBNode *current = rbnode_find(T, key);
+void rbtree_check(RBTree *T, RBNode *remove){
+    
     
 
 }
-void rbtree_erase(RBTree *T, RBNode delete){
-    RBNode *remove;
+void rbtree_erase(RBTree *T, int key){
+    RBNode *remove = rbnode_find(T, key);
+    rbtree_check(T, remove);
+    
     RBNode *replace_node;
     int is_remove_black, is_remove_red;
 
@@ -433,7 +437,7 @@ int main(){
     
 
     //Erase
-    rbtree_check(T, 18);
+    rbtree_erase(T, 3);
 
     // Free the Red Black Tree
     //delete_rbtree(T);
