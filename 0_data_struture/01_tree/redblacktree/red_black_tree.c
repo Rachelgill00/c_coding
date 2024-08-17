@@ -30,7 +30,7 @@ void rebtree_insert_fixup(RBTree *T, RBNode *node);
 void rbtree_left_rotate(RBTree *T, RBNode *node);
 void rbtree_right_rotate(RBTree *T, RBNode *node);
 void exchange_color(RBNode *left, RBNode *right);
-RBNode *rbnode_find(RBTree *T, int key0);
+void rbnode_find(RBTree *T, int key);
 void printTree(RBTree *T, RBNode *node, int type, int level);
 
 // Print the Red Black Tree.
@@ -299,64 +299,69 @@ void rbtree_insert(RBTree *T, int key){
     rebtree_insert_fixup(T, newnode);
 }
 
-RBNode *rbnode_find(RBTree *T, int key){
+void rbnode_find(RBTree *T, int key){
     RBNode *current = T -> root;
     while(current != T ->nil){
         if(key == current -> key){
-            printf("Node %d is found!\n", key);
+            printf("Node [%d] is found!\n", key);
 
-            return current;
-        }else{
-            current = (key < current -> key) ? current -> left : current -> right;
+            return ;
+        }
+        // According to key to chose the LEft Tree or RIGHT Tree.
+        current = (key < current->key) ? current->left : current->right;
+        
+        if (current != T->nil) {  //Avoid printing the empty nodes.
+            printf("Visiting Node %d\n", current->key);
         }
     }
+    printf("Can not fine the node[%d]!", key);
 
-    return NULL;
+    return ;
 }
 
 /*
 Erase Case:
 	1) 
-        (1) '?? ??(RED)'?  '??? ?'? ??:
+        (1) The node which will be remove only has LeftChild or RightChild:
+            (Only BLACK -> RED)
+            THe remoeve node's Child Node will be replace it, 
+            Child Node's color will turns RED.
 
-        (2) '??? ??(delete)'? '?? ??? ?'? ??
+        (2) The node which will be remove has no Child Node:
                 a. RED node: 
                     Don't need fix up afer deleting.
                 b. BLACK node: 
-                    --?? node? RED? ? :
-                        ¢ÙBLACK??node at least has one 'RED??node':
+                    --When the brother node is BLACK:
+                        ¢Ùbrother node at least has one 'RED Node':
                             delete node's color:BLACK --> extra_black;
                             (LL, RR, LR, RL)change the color + rotation
                             extra_black --> BLACK
-                        ¢ÚBLACK??node's ??node are all black:
+                        ¢ÚThe child nodes of brother node are all black:
                             delete node's color:BLACK --> extra_black;
-                            ?? ??? ?? RED? ??, 
-                            extra_BLACK? ?? ????.
-                            (until it meets the RED Node or root);
+                            The brother node turns RED, 
+                            extra_BLACK move up.
+                            (until it meets the 'RED Node' or 'root');
 
-                    --?? node? RED? ? : 
+                    --When the brother node is RED
                         delete node's color:BLACK --> extra_black;
-                        ?? ??? ?? parent ??? ?? ?? ???.
+                        'brother node' and 'parent node' change the colors with each other
                         Rotation;
-                        Keep the extra_black and fix up.(See the ?? ??'s color to fixup)
-
-            remove : ??? ?? delete? ????.
-            replace_node : delete? ?? ??? remove( = delete )? ?? ??? ????. 
-            (??? ???? ??? nil ??? ????.)
+                        Keep the extra_black and fix up.(See the brother node's color to fixup)
 	
-	2) ??? ?? delete? ?? ?? ??? ?? ???? ?? -> 1) / 2)
-		remove : ??? ??? ??? ?????? 
-	             ?? ?? ??? ???(successor) ??? ????.
-	
-        replace_node : ??? ??? ?? ??? remove? ?? ??? ????. 
-                (??? ??? ?? ?? ??? ???? ??? ?? ?? ??? ????.)
+	2) The node which will be remove has both of LeftChild and  RightChild 
+		
 
 */
-void rbtree_erase(RBTree *T, int key){
-    
+void rbtree_erase(RBTree *T, RBNode delete){
+    RBNode *remove;
+    RBNode *replace_node;
+    int is_remove_black, is_remove_red;
+
+
+
 }
 
-void rbtree_erase_fixup(RBTree *T, RBNode *z){
+void rbtree_erase_fixup(RBTree *T, RBNode *delete){
 
 }
 
@@ -412,14 +417,20 @@ int main(){
     for(int i =0; i< inputTotal; i++){
         printf("-----------------------------node:%d\n", inputData[i]);
         rbtree_insert(T, inputData[i]);
-    
-        // Print the Red Black Tree
-        printf("Red Black Tree:\n");
-        printTree(T, T -> root, 0, 0);
     }
 
+    // Print the Red Black Tree
+    printf("Red Black Tree:\n");
+    printTree(T, T -> root, 0, 0);
+
+    //Find a node
+    rbnode_find(T, 27);
+
+    //Erase
+
+
     // Free the Red Black Tree
-    delete_rbtree(T);
+    //delete_rbtree(T);
 
     return 0;
 }
