@@ -30,7 +30,7 @@ void rebtree_insert_fixup(RBTree *T, RBNode *node);
 void rbtree_left_rotate(RBTree *T, RBNode *node);
 void rbtree_right_rotate(RBTree *T, RBNode *node);
 void exchange_color(RBNode *left, RBNode *right);
-void rbnode_find(RBTree *T, int key);
+//void rbnode_find(RBTree *T, int key, int *result);
 void printTree(RBTree *T, RBNode *node, int type, int level);
 
 // Print the Red Black Tree.
@@ -299,13 +299,13 @@ void rbtree_insert(RBTree *T, int key){
     rebtree_insert_fixup(T, newnode);
 }
 
-void rbnode_find(RBTree *T, int key){
+RBNode * rbnode_find(RBTree *T, int key){
     RBNode *current = T -> root;
     while(current != T ->nil){
         if(key == current -> key){
             printf("Node [%d] is found!\n", key);
-
-            return ;
+    
+            return current;
         }
         // According to key to chose the LEft Tree or RIGHT Tree.
         current = (key < current->key) ? current->left : current->right;
@@ -316,7 +316,7 @@ void rbnode_find(RBTree *T, int key){
     }
     printf("Can not fine the node[%d]!", key);
 
-    return ;
+    return NULL;
 }
 
 /*
@@ -350,8 +350,13 @@ Erase Case:
 	
 	2) The node which will be remove has both of LeftChild and  RightChild 
 		
-
 */
+
+void rbtree_check(RBTree *T, int key){
+    RBNode *current = rbnode_find(T, key);
+    
+
+}
 void rbtree_erase(RBTree *T, RBNode delete){
     RBNode *remove;
     RBNode *replace_node;
@@ -403,7 +408,7 @@ void printFile(int inputTotal, int inputData[]){
 int main(){
     int inputTotal;                         // Number of tree size
     int inputData[MAX_TREE_SIZE];           // Trees' value
-
+    
     // Read input data from a file
     inputTotal = readInput(inputData);
 
@@ -414,20 +419,21 @@ int main(){
     //Init a Red Black Tree
     RBTree *T = new_rbtree();    //Insert the nodes to the Red Black Tree
 
+    
     for(int i =0; i< inputTotal; i++){
         printf("-----------------------------node:%d\n", inputData[i]);
         rbtree_insert(T, inputData[i]);
     }
 
-    // Print the Red Black Tree
+     // Print the Red Black Tree
     printf("Red Black Tree:\n");
     printTree(T, T -> root, 0, 0);
 
     //Find a node
-    rbnode_find(T, 27);
+    
 
     //Erase
-
+    rbtree_check(T, 18);
 
     // Free the Red Black Tree
     //delete_rbtree(T);
