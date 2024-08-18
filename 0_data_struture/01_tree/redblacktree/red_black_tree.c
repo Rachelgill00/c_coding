@@ -413,12 +413,22 @@ void rbtree_erase(RBTree *T, int key){
 
         temp -> left = rmNode -> left;
         rmNode -> left -> parent = temp;
+    
+    //----------------------------------------------------
+    }else{//When the RemoveNode has one kid:
+        if(rmNode -> left != T -> nil){
+             child = rmNode -> left;
+        }else{
+
+        }
     }
 
 }
 
 void rbtree_erase_fixup(RBTree *T, RBNode *delete){
-
+    RBNode *bro;
+    int color;
+    
 }
 
 //Read input data from a file and write the data into buffer
