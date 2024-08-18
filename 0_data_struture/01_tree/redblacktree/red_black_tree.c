@@ -360,13 +360,60 @@ void rbtree_check(RBTree *T, RBNode *remove){
 
 }
 void rbtree_erase(RBTree *T, int key){
-    RBNode *remove = rbnode_find(T, key);
-    rbtree_check(T, remove);
-    
-    RBNode *replace_node;
-    int is_remove_black, is_remove_red;
+    RBNode *rmNode = rbnode_find(T, key);
+    RBNode *root = T -> root;
 
+    RBNode *temp, *child, *parent;
+    int color;
 
+    // When the RemoveNode has two kids:
+    if((rmNode -> left != T ->nil) && (rmNode -> right != T -> nil)){
+        // Find the successor node of the node to be deleted, 
+        // which is the leftmost leaf node of the right subtree 
+        temp = rmNode -> right;
+        while(temp -> left != T -> nil){
+            temp = temp -> left;
+        }
+
+        parent = rmNode -> parent;
+        // Determine 'whether' the rmNode is 'the root node'
+        if(rmNode -> parent != T -> nil){
+            //if rmNode is not the root
+            if(rmNode == rmNode -> parent -> left){// if rmNode is the leftChild
+                rmNode -> parent -> left = temp;
+            }else{//if rmNode is the rightChild
+                rmNode -> parent -> right =temp;
+            }
+        }else{
+            root = temp;
+        }
+        //------------------------------------------------------------
+        // The problem shifted to deleting the original temp
+        parent = temp -> parent;
+
+        // child is the right child of temp. and temp must not have a left child
+        // So just let the child replace it directly~ 
+        child = temp -> right;
+
+        //
+        if(parent == rmNode){
+            parent = temp;
+        }else{
+            //if child exist, and make it be the parent's left child
+            if(child != NULL){
+                child -> parent = parent;
+            }
+            parent -> left = child;
+
+            temp -> right = rmNode -> right;
+            rmNode -> right -> parent = temp;
+        }
+        temp -> parent = rmNode -> parent;
+        temp -> color = rmNode -> color;
+
+        temp -> left = rmNode -> left;
+        rmNode -> left -> parent = temp;
+    }
 
 }
 
@@ -429,15 +476,16 @@ int main(){
         rbtree_insert(T, inputData[i]);
     }
 
-     // Print the Red Black Tree
+    // Print the Red Black Tree
     printf("Red Black Tree:\n");
     printTree(T, T -> root, 0, 0);
-
-    //Find a node
     
-
     //Erase
-    rbtree_erase(T, 3);
+    rbtree_erase(T, 18);
+
+    // Print the Red Black Tree
+    printf("Red Black Tree:\n");
+    printTree(T, T -> root, 0, 0);
 
     // Free the Red Black Tree
     //delete_rbtree(T);
