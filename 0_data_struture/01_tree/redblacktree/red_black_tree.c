@@ -444,27 +444,39 @@ void rbtree_erase(RBTree *T, int key){
         rmNode -> left -> parent = temp;
     
     //----------------------------------------------------
-    }else{//When the RemoveNode has one kid:
+    }else{  
         if(rmNode -> left != T -> nil){
              child = rmNode -> left;
+             printf("This rmNode has left CHild!\n");
         }else{
             child = rmNode -> right;
+            printf("This rmNode has right CHild\n or This rmNode has no child!\n");
         }
         parent = rmNode -> parent;
         color = rmNode -> color;
+        printf("color: %s\n", (color == RED) ? "R" : "B");
 
+        // When the RemoveNode has one kid:
         if(child != T -> nil){
-            child -> parent;
+            child -> parent = parent;
         }
+
+        // When the RemoveNode is not the root
+        // And Init the parent Pointer
         if(parent != T -> nil){
+            // If the rmNode is the leftChild
             if(parent -> left == rmNode){
                 parent -> left = child;
+                printf("rmNode is the leftChild!\n");
+            // If the rmNode is the rightChild
             }else{
                 parent -> right = child;
+                printf("rmNode is the rightChild!\n");
             }
         }
     }
-    if(color == 1){
+    if(color == BLACK){
+        printf("rmNode's color is BLACK!\n");
         rbtree_erase_fixup(T, child, parent);
         free(rmNode);
         return;
@@ -598,16 +610,17 @@ int main(){
     // Print the Red Black Tree
     printf("Red Black Tree:\n");
     printTree(T, T -> root, 0, 0);
-    //-----------------------------------------
+    
     //Erase
+    printf("---------------------------------------\n");
     rbtree_erase(T, 18);
 
     // Print the Red Black Tree
     printf("Red Black Tree:\n");
     printTree(T, T -> root, 0, 0);
 
-    //----------------------------------------
     //Erase
+    printf("---------------------------------------\n");
     rbtree_erase(T, 25);
 
     // Print the Red Black Tree
