@@ -397,23 +397,26 @@ void rbtree_erase(RBTree *T, int key){
 
     // When the RemoveNode has two kids:
     if((rmNode -> left != T ->nil) && (rmNode -> right != T -> nil)){
+        printf("This rmNode has two tries!\n");
         // Find the successor node of the node to be deleted, 
         // which is the leftmost leaf node of the right subtree 
         temp = rmNode -> right;
         while(temp -> left != T -> nil){
             temp = temp -> left;
         }
+        printf("temp = %d\n", temp -> key);
 
         parent = rmNode -> parent;
-        // Determine 'whether' the rmNode is 'the root node'
+        // Determine 'whether' the rmNode is not 'the root node'
         if(rmNode -> parent != T -> nil){
-            //if rmNode is not the root
-            if(rmNode == rmNode -> parent -> left){// if rmNode is the leftChild
+            if(rmNode == rmNode -> parent -> left){
+                // if rmNode is the leftChild
                 rmNode -> parent -> left = temp;
             }else{//if rmNode is the rightChild
                 rmNode -> parent -> right =temp;
             }
         }else{
+            // if rmNode is the root
             root = temp;
         }
         //------------------------------------------------------------
@@ -428,15 +431,25 @@ void rbtree_erase(RBTree *T, int key){
         if(parent == rmNode){
             parent = temp;
         }else{
-            //if child exist, and make it be the parent's left child
+            
+            // If child exist, and make it be the parent's left child
+            // Deal the relationship bewween 
+            //[temp's parent and temp's child]
             if(child != NULL){
                 child -> parent = parent;
+                child -> color = 1;
             }
             parent -> left = child;
-
+            
+            // Deal with the relationship between 
+            //[temp and rmNode];
             temp -> right = rmNode -> right;
             rmNode -> right -> parent = temp;
+            
         }
+
+        // Fixup the temp(rmNode)
+        // Fixup temp(rmNode)'s parent, color, child
         temp -> parent = rmNode -> parent;
         temp -> color = rmNode -> color;
 
@@ -618,7 +631,7 @@ int main(){
     // Print the Red Black Tree
     printf("Red Black Tree:\n");
     printTree(T, T -> root, 0, 0);
-
+    
     //Erase
     printf("---------------------------------------\n");
     rbtree_erase(T, 25);
@@ -626,6 +639,17 @@ int main(){
     // Print the Red Black Tree
     printf("Red Black Tree:\n");
     printTree(T, T -> root, 0, 0);
+
+    //Erase
+    printf("---------------------------------------\n");
+    rbtree_erase(T, 15);
+
+    // Print the Red Black Tree
+    printf("Red Black Tree:\n");
+    printTree(T, T -> root, 0, 0);
+
+    
+    
 
     //------------------------------------------
     // Free the Red Black Tree
