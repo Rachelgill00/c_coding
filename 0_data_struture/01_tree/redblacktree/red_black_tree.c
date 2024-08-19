@@ -32,6 +32,7 @@ void rbtree_right_rotate(RBTree *T, RBNode *node);
 void exchange_color(RBNode *left, RBNode *right);
 RBNode * rbnode_find(RBTree *T, int key);
 void rbtree_erase(RBTree *T, int key);
+void rbtree_erase_fixup(RBTree *T, RBNode *rmNode, RBNode *parent);
 void printTree(RBTree *T, RBNode *node, int type, int level);
 
 // Print the Red Black Tree.
@@ -334,11 +335,11 @@ Erase Case:
                     Don't need fix up afer deleting.
                 b. BLACK node: 
                     --When the brother node is BLACK:
-                        ¢Ùbrother node at least has one 'RED Node':
+                        1.brother node at least has one 'RED Node':
                             delete node's color:BLACK --> extra_black;
                             (LL, RR, LR, RL)change the color + rotation
                             extra_black --> BLACK
-                        ¢ÚThe child nodes of brother node are all black:
+                        2.The child nodes of brother node are all black:
                             delete node's color:BLACK --> extra_black;
                             The brother node turns RED, 
                             extra_BLACK move up.
@@ -354,11 +355,6 @@ Erase Case:
 		
 */
 
-void rbtree_check(RBTree *T, RBNode *remove){
-    
-    
-
-}
 void rbtree_erase(RBTree *T, int key){
     RBNode *rmNode = rbnode_find(T, key);
     RBNode *root = T -> root;
@@ -419,15 +415,127 @@ void rbtree_erase(RBTree *T, int key){
         if(rmNode -> left != T -> nil){
              child = rmNode -> left;
         }else{
-
+            child = rmNode -> right;
         }
+        parent = rmNode -> parent;
+        color = rmNode -> color;
+
+        if(child != T -> nil){
+            child -> parent;
+        }
+        if(parent != T -> nil){
+            if(parent -> left == rmNode){
+                parent -> left = child;
+            }else{
+                parent -> right = child;
+            }
+        }
+    }
+    if(color == 1){
+        rbtree_erase_fixup(T, child, parent);
+        free(rmNode);
+        return;
     }
 
 }
 
-void rbtree_erase_fixup(RBTree *T, RBNode *delete){
+void rbtree_erase_fixup(RBTree *T, RBNode *rmNode, RBNode *parent){
+    RBNode *root = T -> root;
     RBNode *bro;
-    int color;
+    RBNode *bro_child;
+    //int color;
+
+    while(((rmNode != root)) && ((rmNode -> color != 1 || rmNode == T -> nil))){
+        // When rmNode is left child 
+        // and broNode is right child
+        if(parent -> left == rmNode){
+            bro = parent -> right; // (RR) + (RL) (bro is right child)
+            //--------------------------------------------------
+
+
+            // When bro Node is 'RED'
+            if(bro -> color == 2){
+                //change the color (parent, bro)
+                exchange_color(parent, bro);
+                rbtree_left_rotate(T, parent);
+            }
+
+            // When bro Node is 'BLACK', 
+            if(bro -> color == 1){
+                //RR
+                if(bro -> right -> color == 2){
+                    bro_child = bro -> right;
+
+                    // change the color
+                    exchange_color(bro, bro_child);
+                    exchange_color(parent, bro);
+                    parent -> color = 1;
+
+                    //rotation
+                    rbtree_left_rotate(T, bro);
+
+                    break;
+                }
+                //RL
+                if((bro -> left -> color == 2) && (bro -> right -> color == 1)){
+                    bro_child = bro -> left;
+
+                    // change the color
+                    exchange_color(parent, bro -> left);
+                    //parent -> color = 1;
+
+                    // rotation
+                    rbtree_right_rotate(T, bro);
+                    rbtree_left_rotate(T, bro_child);
+                }
+                // When bros' children are all 'BLACK'
+                if((bro -> left -> color == 1)  && (bro -> right -> color == 1)){
+                    bro -> color = 2;
+                    rmNode = parent;
+                    parent = rmNode -> parent;
+                }
+                
+
+            }
+        }else{
+            // When rmNode is right child 
+            // and broNode is left child
+            bro = parent -> left;
+
+            // When bro Node is 'RED'
+            if(bro -> color == 2){
+                exchange_color(bro, parent);
+                rbtree_right_rotate(T, bro);
+            }
+
+            // When bro Node is 'BLACK'
+            if(bro -> color == 1){
+                //LL
+                if(bro -> left -> color == 2){
+                    exchange_color(bro, bro -> left);
+                    exchange_color(parent, bro);
+                    parent -> color = 1;
+                    rbtree_right_rotate(T, bro);
+
+                    break;
+                }
+                //LR
+                if((bro -> right -> color == 2) && (bro -> left -> color == 1)){
+                    exchange_color(parent, bro -> right);
+                    rbtree_left_rotate(T, bro -> right);
+                    rbtree_right_rotate(T, bro -> right);
+                }
+                // When bros' children are all 'BLACK'
+                if((bro -> left -> color == 1)  && (bro -> right -> color == 1)){
+                    bro -> color == 2;
+                    rmNode = parent;
+                    parent = rmNode -> parent;
+                }
+
+            }
+        }
+    }
+    rmNode -> color = 1;
     
 }
 
