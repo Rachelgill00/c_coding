@@ -31,8 +31,9 @@ void rbtree_left_rotate(RBTree *T, RBNode *node);
 void rbtree_right_rotate(RBTree *T, RBNode *node);
 void exchange_color(RBNode *left, RBNode *right);
 RBNode * rbnode_find(RBTree *T, int key);
+//void rbtree_erase_fixup(RBTree *T, RBNode *rmNode, RBNode *parent);
+void rbtree_erase_fixup(RBTree *T, RBNode *parent, int is_left);
 void rbtree_erase(RBTree *T, int key);
-void rbtree_erase_fixup(RBTree *T, RBNode *rmNode, RBNode *parent);
 void printTree(RBTree *T, RBNode *node, int type, int level);
 
 //Read input data from a file and write the data into buffer
@@ -389,13 +390,88 @@ Erase Case:
 */
 
 void rbtree_erase(RBTree *T, int key){
+    RBNode *delete = rbnode_find(T, key);
+    RBNode *remove, *remove_parent, *replace_node;
+    int is_remove_black, is_remove_left;
+
+    // Step 1) delete 삭제 후 대체할 replace_node 찾기
+    if((delete -> left != T->nil) && (delete -> right != T -> nil)){
+        remove = delete -> right;
+        while(remove -> left != T -> nil){
+        remove = remove -> left;   
+        }
+        replace_node = remove -> right;
+        delete -> key = remove -> key;
+    }else{
+        remove = delete;
+        replace_node = (remove -> right != T -> nil) ? remove -> right : remove -> left;
+    }
+    remove_parent = remove -> parent;
+    
+    // Step 2) remove 노드 제거하기
+    /* [CASE D1]: remove 노드가 루트인 경우 */
+    if(remove == T -> root){
+        T -> root = replace_node;
+        T -> root -> color = 1;
+        free(remove);
+
+        return ; 
+    }
+
+    // Step 2-1) 'remove의 부모'와 'remove의 자식' 이어주기
+    is_remove_black = remove -> color; 
+    is_remove_left = remove_parent->left == remove;
+
+    // Step 2-1-1) 자식 연결
+    if (is_remove_left)
+    remove_parent->left = replace_node;     
+    else
+    remove_parent->right = replace_node;
+
+    // Step 2-1-2) 부모도 연결
+    replace_node->parent = remove_parent;
+    free(remove);
+
+    /* [CASE D2~D6]: remove 노드가 검정 노드인 경우 */
+    // Step 3) 불균형 복구 함수 호출
+    if (is_remove_black == 1)
+    rbtree_erase_fixup(T, remove_parent, is_remove_left);
+    return ;
+}
+
+void rbtree_erase_fixup(RBTree *T, RBNode *parent, int is_left){
+    RBNode *extra_black = is_left? parent -> left : parent -> right;
+    if (extra_black -> color = 2){
+        extra_black -> color = 1;
+        
+        return;
+    }
+
+    RBNode *bro = is_left ? parent -> right : parent -> left;
+    
+    //case: When bro is RED
+    exchange_color(bro, parent);
+    if(bro -> color == 2){
+        if(is_left){
+            rbtree_left_rotate(T, bro);
+        }else{
+            rbtree_right_rotate(T, bro);
+        }
+        rbtree_erase_fixup(T, parent, is_left);
+    }
+    
+    
+}
+
+/*
+void rbtree_erase(RBTree *T, int key){
     RBNode *rmNode = rbnode_find(T, key);
     RBNode *root = T -> root;
 
     RBNode *temp, *child, *parent;
     int color;
 
-    // When the RemoveNode has two kids:
+    // When the RemoveNode has 2 kids:
     if((rmNode -> left != T ->nil) && (rmNode -> right != T -> nil)){
         printf("This rmNode has two tries!\n");
         // Find the successor node of the node to be deleted, 
@@ -496,8 +572,10 @@ void rbtree_erase(RBTree *T, int key){
     }
 
 }
+*/
 
-void rbtree_erase_fixup(RBTree *T, RBNode *rmNode, RBNode *parent){
+/*
+void rbtree_erase_fixup(RBTree *T, RBNode *parent, int is_left){
     RBNode *root = T -> root;
     RBNode *bro;
     RBNode *bro_child;
@@ -597,6 +675,7 @@ void rbtree_erase_fixup(RBTree *T, RBNode *rmNode, RBNode *parent){
     
 }
 
+*/
 
 // Node Deletion
 
