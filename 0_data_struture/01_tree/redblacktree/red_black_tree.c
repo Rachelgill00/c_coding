@@ -449,7 +449,7 @@ void rbtree_erase_fixup(RBTree *T, RBNode *parent, int is_left){
 
     RBNode *bro = is_left ? parent -> right : parent -> left;
     
-    //case: When bro is RED
+    //case: When broNode is RED
     exchange_color(bro, parent);
     if(bro -> color == 2){
         if(is_left){
@@ -458,8 +458,55 @@ void rbtree_erase_fixup(RBTree *T, RBNode *parent, int is_left){
             rbtree_right_rotate(T, bro);
         }
         rbtree_erase_fixup(T, parent, is_left);
+        return ;
+    }
+
+    RBNode *bro_left = is_left ? bro -> left : bro -> right;
+    RBNode *bro_right = is_left ? bro -> right : bro -> left;
+    
+    // case: When broNode is BLACK, and at least has one RED child
+    //RL
+    if((is_left) && (bro_left -> color == 2) && (bro_right -> color == 1)){
+        exchange_color(bro, parent);
+        rbtree_right_rotate(T, bro_left);
+        rbtree_left_rotate(T, bro_left);
+
+        return ;
+    }
+    //RR
+    if((is_left) && (bro_right -> color == 2)){
+        exchange_color(bro, bro_right);
+        exchange_color(parent, bro);
+        parent -> color = 1;
+        rbtree_left_rotate(T, bro);
+
+        return ;
+    }
+    //LR
+    if((bro_left -> color == 2) && (bro_right -> color == 1)){
+        exchange_color(parent, bro_right);
+        rbtree_left_rotate(T, bro_right);
+        rbtree_right_rotate(T, bro_right);
+
+        return ;
+    }
+
+    //LL
+    if(bro_right -> color == 2){
+        exchange_color(bro, bro_right);
+        exchange_color(parent, bro_right);
+        parent -> color = 1;
+        rbtree_right_rotate(T, bro);
+
+        return ; 
     }
     
+    //case: when bro is BLACK, and bros' children are all BLACK
+    bro -> color = 2;
+
+    if(parent != T-> root){
+        rbtree_erase_fixup(T, parent -> parent, parent -> parent -> left == parent);
+    }
     
 }
 
