@@ -549,6 +549,52 @@ void rbtree_erase_fixup(RBTree *T, RBNode *parent, int is_left){
     }
 }
 
+// Node Deletion
+
+int main(){
+    int inputTotal;                         // Number of tree size
+    int deleteTotal;                        // Number of delete size
+    int inputData[MAX_TREE_SIZE];           // Tree's value
+    int inputDeleteData[MAX_TREE_SIZE];     // The values and order of deleted nodes 
+    
+    // Read input data from a file
+    inputTotal = readInput(INPUT_FILE1_NAME, inputData);
+
+    // Print the result
+    printFile(inputTotal, inputData);
+    printf("\n");
+
+    //---------------------------------------------------------------
+
+    //Init a Red Black Tree
+    RBTree *T = new_rbtree();    //Insert the nodes to the Red Black Tree
+
+    
+    for(int i =0; i< inputTotal; i++){
+        printf("-----------------------------node:%d\n", inputData[i]);
+        rbtree_insert(T, inputData[i]);
+        // Print the Red Black Tree
+        printf("Red Black Tree:\n");
+        printTree(T, T -> root, 0, 0);
+    }
+
+    printf("----------------Delete node!------------------\n");
+
+     deleteTotal = readInput(INPUT_FILE2_NAME, inputDeleteData);
+     printFile(deleteTotal, inputDeleteData);
+     printf("\n");
+    
+    for(int d = 0; d < deleteTotal; d++){
+        printf("-----------------------------node:%d\n", inputDeleteData[d]);
+        rbtree_erase(T, inputDeleteData[d]);
+        // Print the Red Black Tree
+        printf("Red Black Tree:\n");
+        printTree(T, T -> root, 0, 0);
+    }
+    
+    return 0;
+}
+
 /*
 void rbtree_erase(RBTree *T, int key){
     RBNode *rmNode = rbnode_find(T, key);
@@ -762,50 +808,3 @@ void rbtree_erase_fixup(RBTree *T, RBNode *parent, int is_left){
 }
 
 */
-
-// Node Deletion
-
-int main(){
-    int inputTotal;                         // Number of tree size
-    int deleteTotal;                        // Number of delete size
-    int inputData[MAX_TREE_SIZE];           // Tree's value
-    int inputDeleteData[MAX_TREE_SIZE];     // The values and order of deleted nodes 
-    
-    // Read input data from a file
-    inputTotal = readInput(INPUT_FILE1_NAME, inputData);
-
-    // Print the result
-    printFile(inputTotal, inputData);
-    printf("\n");
-
-    //---------------------------------------------------------------
-
-    //Init a Red Black Tree
-    RBTree *T = new_rbtree();    //Insert the nodes to the Red Black Tree
-
-    
-    for(int i =0; i< inputTotal; i++){
-        printf("-----------------------------node:%d\n", inputData[i]);
-        rbtree_insert(T, inputData[i]);
-        // Print the Red Black Tree
-        printf("Red Black Tree:\n");
-        printTree(T, T -> root, 0, 0);
-    }
-
-    printf("----------------Delete node!------------------\n");
-
-     deleteTotal = readInput(INPUT_FILE2_NAME, inputDeleteData);
-     printFile(deleteTotal, inputDeleteData);
-     printf("\n");
-    
-    for(int d = 0; d < deleteTotal; d++){
-        printf("-----------------------------node:%d\n", inputDeleteData[d]);
-        rbtree_erase(T, inputDeleteData[d]);
-        // Print the Red Black Tree
-        printf("Red Black Tree:\n");
-        printTree(T, T -> root, 0, 0);
-    }
-    
-    return 0;
-}
-
