@@ -834,12 +834,41 @@ int main(){
     // Print the Red Black Tree
     printf("Red Black Tree:\n");
     printTree(T, T -> root, 0, 0);
-    
 
-    //------------------------------------------
-    // Free the Red Black Tree
-    //delete_rbtree(T);
+    //Erase
+    printf("---------------------------------------\n");
+    rbtree_erase(T, 17);
+    // Print the Red Black Tree
+    printf("Red Black Tree:\n");
+    printTree(T, T -> root, 0, 0);
 
+    //Erase
+    printf("---------------------------------------\n");
+    rbtree_erase(T, 34);
+    // Print the Red Black Tree
+    printf("Red Black Tree:\n");
+    printTree(T, T -> root, 0, 0);
+
+    //Erase
+    printf("---------------------------------------\n");
+    rbtree_erase(T, 9);
+    // Print the Red Black Tree
+    printf("Red Black Tree:\n");
+    printTree(T, T -> root, 0, 0);
+
+    //Erase
+    printf("---------------------------------------\n");
+    rbtree_erase(T, 10);
+    // Print the Red Black Tree
+    printf("Red Black Tree:\n");
+    printTree(T, T -> root, 0, 0);
+
+    //Erase
+    printf("---------------------------------------\n");
+    rbtree_erase(T, 23);
+    // Print the Red Black Tree
+    printf("Red Black Tree:\n");
+    printTree(T, T -> root, 0, 0);
 
     return 0;
 }
