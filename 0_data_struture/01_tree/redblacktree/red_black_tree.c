@@ -2,7 +2,8 @@
 #include <stdlib.h>
 
 #define MAX_TREE_SIZE 100                   // Maximum number of elements
-#define INPUT_FILE_NAME "input2.txt"         // Input file containing input data to sort (+ the number of elements)
+#define INPUT_FILE1_NAME "input2.txt"         // Input file containing input data 
+#define INPUT_FILE2_NAME "input3.txt"         // Input file containing input data 
 
 #define BLACK 1
 #define RED 2
@@ -20,7 +21,7 @@ typedef struct rbtree{
     RBNode *nil; 
 }RBTree;
 
-int readInput(int *buffer);
+int readInput(const char *filename, int *buffer);
 void printFile(int inputTotal, int inputData[]);
 RBTree *new_rbtree(void);
 void delete_rbtree(RBTree *T);
@@ -37,12 +38,12 @@ void rbtree_erase(RBTree *T, int key);
 void printTree(RBTree *T, RBNode *node, int type, int level);
 
 //Read input data from a file and write the data into buffer
-int readInput(int *buffer){
+int readInput(const char *filename, int *buffer){
     FILE* fd;
-    int i;
+    int i = 0;
 
-    if((fd = fopen(INPUT_FILE_NAME, "r")) == NULL){
-        printf("Error: Failure to open '%s'!\n", INPUT_FILE_NAME);
+    if((fd = fopen(filename, "r")) == NULL){
+        printf("Error: Failure to open '%s'!\n", filename);
         exit(0);
         return -1; 
     }
@@ -53,10 +54,12 @@ int readInput(int *buffer){
     }
 
     if (i > MAX_TREE_SIZE){
-        printf("Error: Invalid input data in "INPUT_FILE_NAME".\n");
+        printf("Error: Invalid input data in '%s'.\n", filename);
     }
-        
+
+
 	fclose(fd);  
+
 
     return i;
 }
@@ -764,14 +767,18 @@ void rbtree_erase_fixup(RBTree *T, RBNode *parent, int is_left){
 
 int main(){
     int inputTotal;                         // Number of tree size
-    int inputData[MAX_TREE_SIZE];           // Trees' value
+    int deleteTotal;                        // Number of delete size
+    int inputData[MAX_TREE_SIZE];           // Tree's value
+    int inputDeleteData[MAX_TREE_SIZE];     // The values and order of deleted nodes 
     
     // Read input data from a file
-    inputTotal = readInput(inputData);
+    inputTotal = readInput(INPUT_FILE1_NAME, inputData);
 
     // Print the result
     printFile(inputTotal, inputData);
     printf("\n");
+
+    //---------------------------------------------------------------
 
     //Init a Red Black Tree
     RBTree *T = new_rbtree();    //Insert the nodes to the Red Black Tree
@@ -780,96 +787,25 @@ int main(){
     for(int i =0; i< inputTotal; i++){
         printf("-----------------------------node:%d\n", inputData[i]);
         rbtree_insert(T, inputData[i]);
+        // Print the Red Black Tree
+        printf("Red Black Tree:\n");
+        printTree(T, T -> root, 0, 0);
     }
 
-    // Print the Red Black Tree
-    printf("Red Black Tree:\n");
-    printTree(T, T -> root, 0, 0);
+    printf("----------------Delete node!------------------\n");
+
+     deleteTotal = readInput(INPUT_FILE2_NAME, inputDeleteData);
+     printFile(deleteTotal, inputDeleteData);
+     printf("\n");
     
-    //Erase
-    printf("---------------------------------------\n");
-    rbtree_erase(T, 18);
-    // Print the Red Black Tree
-    printf("Red Black Tree:\n");
-    printTree(T, T -> root, 0, 0);
+    for(int d = 0; d < deleteTotal; d++){
+        printf("-----------------------------node:%d\n", inputDeleteData[d]);
+        rbtree_erase(T, inputDeleteData[d]);
+        // Print the Red Black Tree
+        printf("Red Black Tree:\n");
+        printTree(T, T -> root, 0, 0);
+    }
     
-    //Erase
-    printf("---------------------------------------\n");
-    rbtree_erase(T, 25);
-    // Print the Red Black Tree
-    printf("Red Black Tree:\n");
-    printTree(T, T -> root, 0, 0);
-
-    //Erase
-    printf("---------------------------------------\n");
-    rbtree_erase(T, 15);
-    // Print the Red Black Tree
-    printf("Red Black Tree:\n");
-    printTree(T, T -> root, 0, 0);
-
-    //Erase
-    printf("---------------------------------------\n");
-    rbtree_erase(T, 6);
-    // Print the Red Black Tree
-    printf("Red Black Tree:\n");
-    printTree(T, T -> root, 0, 0);
-
-    //Erase
-    printf("---------------------------------------\n");
-    rbtree_erase(T, 13);
-    // Print the Red Black Tree
-    printf("Red Black Tree:\n");
-    printTree(T, T -> root, 0, 0);
-
-    //Erase
-    printf("---------------------------------------\n");
-    rbtree_erase(T, 37);
-    // Print the Red Black Tree
-    printf("Red Black Tree:\n");
-    printTree(T, T -> root, 0, 0);
-
-    //Erase
-    printf("---------------------------------------\n");
-    rbtree_erase(T, 27);
-    // Print the Red Black Tree
-    printf("Red Black Tree:\n");
-    printTree(T, T -> root, 0, 0);
-
-    //Erase
-    printf("---------------------------------------\n");
-    rbtree_erase(T, 17);
-    // Print the Red Black Tree
-    printf("Red Black Tree:\n");
-    printTree(T, T -> root, 0, 0);
-
-    //Erase
-    printf("---------------------------------------\n");
-    rbtree_erase(T, 34);
-    // Print the Red Black Tree
-    printf("Red Black Tree:\n");
-    printTree(T, T -> root, 0, 0);
-
-    //Erase
-    printf("---------------------------------------\n");
-    rbtree_erase(T, 9);
-    // Print the Red Black Tree
-    printf("Red Black Tree:\n");
-    printTree(T, T -> root, 0, 0);
-
-    //Erase
-    printf("---------------------------------------\n");
-    rbtree_erase(T, 10);
-    // Print the Red Black Tree
-    printf("Red Black Tree:\n");
-    printTree(T, T -> root, 0, 0);
-
-    //Erase
-    printf("---------------------------------------\n");
-    rbtree_erase(T, 23);
-    // Print the Red Black Tree
-    printf("Red Black Tree:\n");
-    printTree(T, T -> root, 0, 0);
-
     return 0;
 }
 
