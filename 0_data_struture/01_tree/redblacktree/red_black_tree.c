@@ -423,8 +423,9 @@ void rbtree_erase(RBTree *T, int key){
     is_remove_left = remove_parent->left == remove;
 
     // Step 2-1-1) 자식 연결
-    if (is_remove_left)
-    remove_parent->left = replace_node;     
+    if (is_remove_left){
+        remove_parent->left = replace_node;     
+    }
     else
     remove_parent->right = replace_node;
 
@@ -440,24 +441,37 @@ void rbtree_erase(RBTree *T, int key){
 }
 
 void rbtree_erase_fixup(RBTree *T, RBNode *parent, int is_left){
+    printf("parent -> key = %d\n", parent -> key);
     RBNode *extra_black = is_left? parent -> left : parent -> right;
-    if (extra_black -> color = 2){
+    if(extra_black == parent -> left){
+        printf("isleft!\n");
+    }
+
+    // If rmNode is RED, it can be deleted directly.
+    if (extra_black -> color == 2){
+        printf("extra_black is RED!\n");
         extra_black -> color = 1;
-        
-        return;
+        return ;
     }
 
     RBNode *bro = is_left ? parent -> right : parent -> left;
+    if(bro == parent -> right){
+        printf("bro is right!\n");
+        printf("bro -> key = %d\n", bro -> key);
+    }
     
     //case: When broNode is RED
-    exchange_color(bro, parent);
     if(bro -> color == 2){
+        printf("bro - > color is RED!\n");
+        exchange_color(bro, parent);
         if(is_left){
             rbtree_left_rotate(T, bro);
         }else{
             rbtree_right_rotate(T, bro);
         }
+        
         rbtree_erase_fixup(T, parent, is_left);
+
         return ;
     }
 
@@ -475,6 +489,7 @@ void rbtree_erase_fixup(RBTree *T, RBNode *parent, int is_left){
     }
     //RR
     if((is_left) && (bro_right -> color == 2)){
+        printf("RR!\n");
         exchange_color(bro, bro_right);
         exchange_color(parent, bro);
         parent -> color = 1;
@@ -503,6 +518,7 @@ void rbtree_erase_fixup(RBTree *T, RBNode *parent, int is_left){
     
     //case: when bro is BLACK, and bros' children are all BLACK
     bro -> color = 2;
+    
 
     if(parent != T-> root){
         rbtree_erase_fixup(T, parent -> parent, parent -> parent -> left == parent);
@@ -774,7 +790,29 @@ int main(){
     printf("Red Black Tree:\n");
     printTree(T, T -> root, 0, 0);
 
-    
+    //Erase
+    printf("---------------------------------------\n");
+    rbtree_erase(T, 6);
+
+    // Print the Red Black Tree
+    printf("Red Black Tree:\n");
+    printTree(T, T -> root, 0, 0);
+
+    //Erase
+    printf("---------------------------------------\n");
+    rbtree_erase(T, 13);
+
+    // Print the Red Black Tree
+    printf("Red Black Tree:\n");
+    printTree(T, T -> root, 0, 0);
+
+    //Erase
+    printf("---------------------------------------\n");
+    rbtree_erase(T, 37);
+
+    // Print the Red Black Tree
+    printf("Red Black Tree:\n");
+    printTree(T, T -> root, 0, 0);
     
 
     //------------------------------------------
