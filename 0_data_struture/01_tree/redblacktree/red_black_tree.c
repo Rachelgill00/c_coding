@@ -599,44 +599,36 @@ int main()
     RBTree *T = new_rbtree();    //Insert the nodes to the Red Black Tree
 
     getrusage(RUSAGE_SELF, &before);
-    //for(int repeat = 0; repeat < 1000; repeat++) {
-        for(int i =0; i< inputTotal; i++)
-        {
-            printf("-----------------------------node:%d\n", inputData[i]);
-            rbtree_insert(T, inputData[i]);   
-            // Print the Red Black Tree
-            printf("Red Black Tree:\n");
-            printTree(T, T -> root, 0, 0);         
-        }
-       
-        printf("----------------Delete node!------------------\n");
-        for(int d = 0; d < deleteTotal; d++)
-        {
-            printf("-----------------------------node:%d\n", inputDeleteData[d]);
-            rbtree_erase(T, inputDeleteData[d]);
-            
-            // Print the Red Black Tree
-            printf("Red Black Tree:\n");
-            printTree(T, T -> root, 0, 0);
-            
-        }
-    //}
-    
+    for(int i =0; i< inputTotal; i++)
+    {
+        printf("-----------------------------node:%d\n", inputData[i]);
+        rbtree_insert(T, inputData[i]);   
+        // Print the Red Black Tree
+        printf("Red Black Tree:\n");
+        printTree(T, T -> root, 0, 0);         
+    }
     getrusage(RUSAGE_SELF, &after);
-    time_insert = calculate(&before, &after);
+    time_insert =  calculate(&before, &after);
 
-    
-    // getrusage(RUSAGE_SELF, &before);
-    // for(int repeat = 0; repeat < 100; repeat++) {
+    printf("----------------Delete node!------------------\n");
+    getrusage(RUSAGE_SELF, &before);
+    for(int d = 0; d < deleteTotal; d++)
+    {
+        printf("-----------------------------node:%d\n", inputDeleteData[d]);
+        rbtree_erase(T, inputDeleteData[d]);
         
-    // }
-    // getrusage(RUSAGE_SELF, &after);
-    // time_delete = calculate(&before, &after);
+        // Print the Red Black Tree
+        printf("Red Black Tree:\n");
+        printTree(T, T -> root, 0, 0);
+        
+    }
+    getrusage(RUSAGE_SELF, &after);
+    time_delete =  calculate(&before, &after);
 
     // Report benchmarks
     printf("TIME IN INSERT:      %.6f\n", time_insert);
-    //printf("TIME IN DELETE:      %.2f\n", time_delete);
-    //printf("TIME IN TOTAL:       %.2f\n\n",time_insert + time_delete);
+    printf("TIME IN DELETE:      %.6f\n", time_delete);
+    printf("TIME IN TOTAL:       %.6f\n\n",time_insert + time_delete);
     
     return 0;
 
