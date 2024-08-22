@@ -597,7 +597,8 @@ int main()
 
     //Init a Red Black Tree
     RBTree *T = new_rbtree();    //Insert the nodes to the Red Black Tree
-
+    
+    printf("----------------Insert node!------------------\n");
     getrusage(RUSAGE_SELF, &before);
     for(int i =0; i< inputTotal; i++)
     {
