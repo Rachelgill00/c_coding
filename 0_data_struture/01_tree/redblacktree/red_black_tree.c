@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 #define MAX_TREE_SIZE 100                   // Maximum number of elements
 #define INPUT_FILE1_NAME "input2.txt"         // Input file containing input data 
@@ -23,8 +25,10 @@ typedef struct rbtree{
 
 int readInput(const char *filename, int *buffer);
 void printFile(int inputTotal, int inputData[]);
+
 RBTree *new_rbtree(void);
 void delete_rbtree(RBTree *T);
+
 void traverse_and_delete_node(RBTree *T, RBNode *node);
 void rbtree_insert(RBTree *T, int key);
 void rebtree_insert_fixup(RBTree *T, RBNode *node);
@@ -36,6 +40,7 @@ RBNode * rbnode_find(RBTree *T, int key);
 void rbtree_erase_fixup(RBTree *T, RBNode *parent, int is_left);
 void rbtree_erase(RBTree *T, int key);
 void printTree(RBTree *T, RBNode *node, int type, int level);
+double calculate(const struct rusage *b, const struct rusage *a);
 
 //Read input data from a file and write the data into buffer
 int readInput(const char *filename, int *buffer){
@@ -549,9 +554,22 @@ void rbtree_erase_fixup(RBTree *T, RBNode *parent, int is_left){
     }
 }
 
-// Node Deletion
+// Returns number of seconds between b and a 
+double calculate(const struct rusage *b, const struct rusage *a)
+{
+    if( b == NULL || a == NULL){
+        return 0.0;
+    }else{
+        return ((((a->ru_utime.tv_sec * 1000000 + a->ru_utime.tv_usec) -
+                  (b->ru_utime.tv_sec * 1000000 + b->ru_utime.tv_usec)) +
+                 ((a->ru_stime.tv_sec * 1000000 + a->ru_stime.tv_usec) -
+                  (b->ru_stime.tv_sec * 1000000 + b->ru_stime.tv_usec)))
+                / 1000000.0);
+    }
+}
 
-int main(){
+int main()
+{
     int inputTotal;                         // Number of tree size
     int deleteTotal;                        // Number of delete size
     int inputData[MAX_TREE_SIZE];           // Tree's value
@@ -559,252 +577,67 @@ int main(){
     
     // Read input data from a file
     inputTotal = readInput(INPUT_FILE1_NAME, inputData);
+    deleteTotal = readInput(INPUT_FILE2_NAME, inputDeleteData);
 
     // Print the result
     printFile(inputTotal, inputData);
     printf("\n");
+
+    printFile(deleteTotal, inputDeleteData);
+    printf("\n");
+
+    // Structures for timing data
+    struct rusage before, after;
+
+
+    // Benchmarks
+    double time_insert = 0.0, time_delete = 0.0; 
 
     //---------------------------------------------------------------
 
     //Init a Red Black Tree
     RBTree *T = new_rbtree();    //Insert the nodes to the Red Black Tree
 
+    getrusage(RUSAGE_SELF, &before);
+    //for(int repeat = 0; repeat < 1000; repeat++) {
+        for(int i =0; i< inputTotal; i++)
+        {
+            printf("-----------------------------node:%d\n", inputData[i]);
+            rbtree_insert(T, inputData[i]);   
+            // Print the Red Black Tree
+            printf("Red Black Tree:\n");
+            printTree(T, T -> root, 0, 0);         
+        }
+       
+        printf("----------------Delete node!------------------\n");
+        for(int d = 0; d < deleteTotal; d++)
+        {
+            printf("-----------------------------node:%d\n", inputDeleteData[d]);
+            rbtree_erase(T, inputDeleteData[d]);
+            
+            // Print the Red Black Tree
+            printf("Red Black Tree:\n");
+            printTree(T, T -> root, 0, 0);
+            
+        }
+    //}
     
-    for(int i =0; i< inputTotal; i++){
-        printf("-----------------------------node:%d\n", inputData[i]);
-        rbtree_insert(T, inputData[i]);
-        // Print the Red Black Tree
-        printf("Red Black Tree:\n");
-        printTree(T, T -> root, 0, 0);
-    }
+    getrusage(RUSAGE_SELF, &after);
+    time_insert = calculate(&before, &after);
 
-    printf("----------------Delete node!------------------\n");
-
-     deleteTotal = readInput(INPUT_FILE2_NAME, inputDeleteData);
-     printFile(deleteTotal, inputDeleteData);
-     printf("\n");
     
-    for(int d = 0; d < deleteTotal; d++){
-        printf("-----------------------------node:%d\n", inputDeleteData[d]);
-        rbtree_erase(T, inputDeleteData[d]);
-        // Print the Red Black Tree
-        printf("Red Black Tree:\n");
-        printTree(T, T -> root, 0, 0);
-    }
+    // getrusage(RUSAGE_SELF, &before);
+    // for(int repeat = 0; repeat < 100; repeat++) {
+        
+    // }
+    // getrusage(RUSAGE_SELF, &after);
+    // time_delete = calculate(&before, &after);
+
+    // Report benchmarks
+    printf("TIME IN INSERT:      %.6f\n", time_insert);
+    //printf("TIME IN DELETE:      %.2f\n", time_delete);
+    //printf("TIME IN TOTAL:       %.2f\n\n",time_insert + time_delete);
     
     return 0;
-}
-
-/*
-void rbtree_erase(RBTree *T, int key){
-    RBNode *rmNode = rbnode_find(T, key);
-    RBNode *root = T -> root;
-
-    RBNode *temp, *child, *parent;
-    int color;
-
-    // When the RemoveNode has 2 kids:
-    if((rmNode -> left != T ->nil) && (rmNode -> right != T -> nil)){
-        printf("This rmNode has two tries!\n");
-        // Find the successor node of the node to be deleted, 
-        // which is the leftmost leaf node of the right subtree 
-        temp = rmNode -> right;
-        while(temp -> left != T -> nil){
-            temp = temp -> left;
-        }
-        printf("temp = %d\n", temp -> key);
-
-        parent = rmNode -> parent;
-        // Determine 'whether' the rmNode is not 'the root node'
-        if(rmNode -> parent != T -> nil){
-            if(rmNode == rmNode -> parent -> left){
-                // if rmNode is the leftChild
-                rmNode -> parent -> left = temp;
-            }else{//if rmNode is the rightChild
-                rmNode -> parent -> right =temp;
-            }
-        }else{
-            // if rmNode is the root
-            root = temp;
-        }
-        //------------------------------------------------------------
-        // The problem shifted to deleting the original temp
-        parent = temp -> parent;
-
-        // child is the right child of temp. and temp must not have a left child
-        // So just let the child replace it directly~ 
-        child = temp -> right;
-
-        //
-        if(parent == rmNode){
-            parent = temp;
-        }else{
-            
-            // If child exist, and make it be the parent's left child
-            // Deal the relationship bewween 
-            //[temp's parent and temp's child]
-            if(child != NULL){
-                child -> parent = parent;
-                child -> color = 1;
-            }
-            parent -> left = child;
-            
-            // Deal with the relationship between 
-            //[temp and rmNode];
-            temp -> right = rmNode -> right;
-            rmNode -> right -> parent = temp;
-            
-        }
-
-        // Fixup the temp(rmNode)
-        // Fixup temp(rmNode)'s parent, color, child
-        temp -> parent = rmNode -> parent;
-        temp -> color = rmNode -> color;
-
-        temp -> left = rmNode -> left;
-        rmNode -> left -> parent = temp;
-    
-    //----------------------------------------------------
-    }else{  
-        if(rmNode -> left != T -> nil){
-             child = rmNode -> left;
-             printf("This rmNode has left CHild!\n");
-        }else{
-            child = rmNode -> right;
-            printf("This rmNode has right CHild\n or This rmNode has no child!\n");
-        }
-        parent = rmNode -> parent;
-        color = rmNode -> color;
-        printf("color: %s\n", (color == RED) ? "R" : "B");
-
-        // When the RemoveNode has one kid:
-        if(child != T -> nil){
-            child -> parent = parent;
-        }
-
-        // When the RemoveNode is not the root
-        // And Init the parent Pointer
-        if(parent != T -> nil){
-            // If the rmNode is the leftChild
-            if(parent -> left == rmNode){
-                parent -> left = child;
-                printf("rmNode is the leftChild!\n");
-            // If the rmNode is the rightChild
-            }else{
-                parent -> right = child;
-                printf("rmNode is the rightChild!\n");
-            }
-        }
-    }
-    if(color == BLACK){
-        printf("rmNode's color is BLACK!\n");
-        rbtree_erase_fixup(T, child, parent);
-        free(rmNode);
-        return;
-    }
 
 }
-*/
-
-/*
-void rbtree_erase_fixup(RBTree *T, RBNode *parent, int is_left){
-    RBNode *root = T -> root;
-    RBNode *bro;
-    RBNode *bro_child;
-    //int color;
-
-    while(((rmNode != root)) && ((rmNode -> color != 1 || rmNode == T -> nil))){
-        // When rmNode is left child 
-        // and broNode is right child
-        if(parent -> left == rmNode){
-            bro = parent -> right; // (RR) + (RL) (bro is right child)
-            //--------------------------------------------------
-
-
-            // When bro Node is 'RED'
-            if(bro -> color == 2){
-                //change the color (parent, bro)
-                exchange_color(parent, bro);
-                rbtree_left_rotate(T, parent);
-            }
-
-            // When bro Node is 'BLACK', 
-            if(bro -> color == 1){
-                //RR
-                if(bro -> right -> color == 2){
-                    bro_child = bro -> right;
-
-                    // change the color
-                    exchange_color(bro, bro_child);
-                    exchange_color(parent, bro);
-                    parent -> color = 1;
-
-                    //rotation
-                    rbtree_left_rotate(T, bro);
-
-                    break;
-                }
-                //RL
-                if((bro -> left -> color == 2) && (bro -> right -> color == 1)){
-                    bro_child = bro -> left;
-
-                    // change the color
-                    exchange_color(parent, bro -> left);
-                    //parent -> color = 1;
-
-                    // rotation
-                    rbtree_right_rotate(T, bro);
-                    rbtree_left_rotate(T, bro_child);
-                }
-                // When bros' children are all 'BLACK'
-                if((bro -> left -> color == 1)  && (bro -> right -> color == 1)){
-                    bro -> color = 2;
-                    rmNode = parent;
-                    parent = rmNode -> parent;
-                }
-                
-
-            }
-        }else{
-            // When rmNode is right child 
-            // and broNode is left child
-            bro = parent -> left;
-
-            // When bro Node is 'RED'
-            if(bro -> color == 2){
-                exchange_color(bro, parent);
-                rbtree_right_rotate(T, bro);
-            }
-
-            // When bro Node is 'BLACK'
-            if(bro -> color == 1){
-                //LL
-                if(bro -> left -> color == 2){
-                    exchange_color(bro, bro -> left);
-                    exchange_color(parent, bro);
-                    parent -> color = 1;
-                    rbtree_right_rotate(T, bro);
-
-                    break;
-                }
-                //LR
-                if((bro -> right -> color == 2) && (bro -> left -> color == 1)){
-                    exchange_color(parent, bro -> right);
-                    rbtree_left_rotate(T, bro -> right);
-                    rbtree_right_rotate(T, bro -> right);
-                }
-                // When bros' children are all 'BLACK'
-                if((bro -> left -> color == 1)  && (bro -> right -> color == 1)){
-                    bro -> color == 2;
-                    rmNode = parent;
-                    parent = rmNode -> parent;
-                }
-
-            }
-        }
-    }
-    rmNode -> color = 1;
-    
-}
-
-*/
