@@ -10,7 +10,8 @@
 #define BLACK 1
 #define RED 2
 
-typedef struct rbnode{
+typedef struct rbnode
+{
     int key;
     int color;
     struct rbnode *parent;
@@ -18,7 +19,8 @@ typedef struct rbnode{
     struct rbnode *right;
 }RBNode;
 
-typedef struct rbtree{
+typedef struct rbtree
+{
     RBNode *root;
     RBNode *nil; 
 }RBTree;
@@ -43,7 +45,8 @@ void printTree(RBTree *T, RBNode *node, int type, int level);
 double calculate(const struct rusage *b, const struct rusage *a);
 
 //Read input data from a file and write the data into buffer
-int readInput(const char *filename, int *buffer){
+int readInput(const char *filename, int *buffer)
+{
     FILE* fd;
     int i = 0;
 
@@ -69,7 +72,8 @@ int readInput(const char *filename, int *buffer){
     return i;
 }
 
-void printFile(int inputTotal, int inputData[]){
+void printFile(int inputTotal, int inputData[])
+{
     // Print the result
     for(int i = 0; i < inputTotal; i++){
         printf("%d ", inputData[i]);
@@ -78,7 +82,8 @@ void printFile(int inputTotal, int inputData[]){
 
 
 // Print the Red Black Tree.
-void printTree(RBTree *T, RBNode *node, int type, int level){
+void printTree(RBTree *T, RBNode *node, int type, int level)
+{
 
     int i;
 
@@ -111,7 +116,8 @@ void printTree(RBTree *T, RBNode *node, int type, int level){
 }
 
 // Init a Red Black Tree.
-RBTree *new_rbtree(void){
+RBTree *new_rbtree(void)
+{
     // New a RBTree 
     RBTree *T = (RBTree *)malloc(sizeof(RBTree));
     if(T == NULL){
@@ -127,7 +133,8 @@ RBTree *new_rbtree(void){
     return T;
 }
 
-void traverse_and_delete_node(RBTree *T, RBNode *node){
+void traverse_and_delete_node(RBTree *T, RBNode *node)
+{
     if(node -> left != T -> nil){
         traverse_and_delete_node(T, node);
     }
@@ -139,7 +146,8 @@ void traverse_and_delete_node(RBTree *T, RBNode *node){
 }
 
 // Remember to free it aftering you have malloced something
- void delete_rbtree(RBTree *T){
+ void delete_rbtree(RBTree *T)
+ {
     RBNode *node = T -> root;
     if (node != T -> nil){
         traverse_and_delete_node(T, node);
@@ -150,7 +158,8 @@ void traverse_and_delete_node(RBTree *T, RBNode *node){
     free(T);
  }
 
- void rbtree_left_rotate(RBTree *T, RBNode *node){
+ void rbtree_left_rotate(RBTree *T, RBNode *node)
+ {
     RBNode *parent = node -> parent;
     RBNode * grand_parent = parent -> parent;
     RBNode * node_left = node -> left;
@@ -175,7 +184,8 @@ void traverse_and_delete_node(RBTree *T, RBNode *node){
     return;
 }
 
-void rbtree_right_rotate(RBTree *T, RBNode *node){
+void rbtree_right_rotate(RBTree *T, RBNode *node)
+{
     RBNode *parent = node -> parent;
     RBNode *grand_parent = parent -> parent;
     RBNode *node_right = node -> right;
@@ -215,13 +225,15 @@ void rbtree_right_rotate(RBTree *T, RBNode *node){
         c. Set the grandparent node to 'newnode', 
            and maybe need to call the fixup function recursively
 */
-void exchange_color(RBNode *left, RBNode *right){
+void exchange_color(RBNode *left, RBNode *right)
+{
         int temp = left -> color;
         left -> color = right -> color;
         right -> color = (temp == BLACK) ? BLACK : RED ;
 }
 
-void rebtree_insert_fixup(RBTree *T, RBNode *node){
+void rebtree_insert_fixup(RBTree *T, RBNode *node)
+{
     // Init some pointers.
     RBNode *parent = node -> parent;
     RBNode *grand_parent = parent -> parent;
@@ -300,7 +312,8 @@ void rebtree_insert_fixup(RBTree *T, RBNode *node){
     return;
 }
 
-void rbtree_insert(RBTree *T, int key){
+void rbtree_insert(RBTree *T, int key)
+{
     // Init the new node.
     RBNode *newnode = (RBNode *)calloc(1, sizeof(RBNode));
     newnode -> key = key;
@@ -343,7 +356,8 @@ void rbtree_insert(RBTree *T, int key){
     rebtree_insert_fixup(T, newnode);
 }
 
-RBNode * rbnode_find(RBTree *T, int key){
+RBNode * rbnode_find(RBTree *T, int key)
+{
     RBNode *current = T -> root;
     while(current != T ->nil){
         if(key == current -> key){
@@ -397,7 +411,8 @@ Erase Case:
 		
 */
 
-void rbtree_erase(RBTree *T, int key){
+void rbtree_erase(RBTree *T, int key)
+{
     RBNode *delete = rbnode_find(T, key);
     RBNode *remove, *remove_parent, *replace_node;
     int is_remove_black, is_remove_left;
@@ -440,7 +455,7 @@ void rbtree_erase(RBTree *T, int key){
     remove_parent->right = replace_node;
 
     // Step 2-1-2) 부모도 연결
-    replace_node->parent = remove_parent;
+    replace_node -> parent = remove_parent;
     free(remove);
 
     /* [CASE D2~D6]: remove 노드가 검정 노드인 경우 */
@@ -452,7 +467,8 @@ void rbtree_erase(RBTree *T, int key){
     return ;
 }
 
-void rbtree_erase_fixup(RBTree *T, RBNode *parent, int is_left){
+void rbtree_erase_fixup(RBTree *T, RBNode *parent, int is_left)
+{
     printf("fixup------------\n");
     printf("parent -> key = %d\n", parent -> key);
     RBNode *extra_black = is_left? parent -> left : parent -> right;
